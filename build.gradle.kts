@@ -4,7 +4,7 @@ import java.util.zip.ZipFile
 plugins {
     java
     war
-    id("org.teavm") version "0.10.2"
+    id("org.teavm") version "0.11.0"
 }
 
 group = "io.github.betterclient"
@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation(teavm.libs.jsoApis)
+    implementation("org.json:json:20240303")
 }
 
 teavm.js {
