@@ -1,7 +1,7 @@
-package io.github.betterclient.jsongraph;
+package io.github.betterclient.jsongraph.renderer;
 
-import io.github.betterclient.jsongraph.renderer.Color;
-import io.github.betterclient.jsongraph.renderer.UIRenderer;
+import io.github.betterclient.jsongraph.util.Color;
+import io.github.betterclient.jsongraph.util.SwitchingColorUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.teavm.jso.browser.AnimationFrameCallback;
@@ -9,11 +9,14 @@ import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 
+import java.math.BigDecimal;
+
 public class GraphRenderer implements AnimationFrameCallback {
     private boolean continuing;
     private final CanvasRenderingContext2D context;
     private final HTMLCanvasElement canvas;
     private final JSONObject object;
+    private static final SwitchingColorUtil colorUtil = new SwitchingColorUtil(Color.GRADIENT_0, Color.GRADIENT_1);
 
     public GraphRenderer(JSONObject object, HTMLCanvasElement canvas) {
         this.continuing = true;
@@ -30,15 +33,24 @@ public class GraphRenderer implements AnimationFrameCallback {
 
     @Override
     public void onAnimationFrame(double timestamp) {
-        //this.context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        this.context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         UIRenderer renderer = new UIRenderer(this.canvas);
-        renderer.fillRect(0, 0, canvas.getWidth(), canvas.getHeight(), Color.WHITE);
+
+        renderGradient(renderer);
 
         render(renderer);
 
         if (this.continuing) {
             Window.requestAnimationFrame(this);
         }
+    }
+
+    private void renderGradient(UIRenderer renderer) {
+        var gradient = this.context.createLinearGradient(0, 0, renderer.getWidth(), renderer.getHeight());
+        gradient.addColorStop(0, colorUtil.getA().toString());
+        gradient.addColorStop(1, colorUtil.getB().toString());
+        this.context.setFillStyle(gradient);
+        this.context.fillRect(0, 0, renderer.getWidth(), renderer.getHeight());
     }
 
     public void stop() {
@@ -48,17 +60,14 @@ public class GraphRenderer implements AnimationFrameCallback {
     //This is where the rendering happens.
     private void render(UIRenderer renderer) {
         renderer.setFont("15px Arial");
-        renderer.renderText("Renderer will try to fit everything onto the canvas, if it doesn't fit, you can scroll.", 10, 15, Color.WHITE);
-
         if (object == null) {
+            renderer.renderText("Renderer will try to fit everything onto the canvas.", 10, 15, Color.WHITE);
             renderer.renderText("Please input a valid json object.", 10, 30, Color.WHITE);
             return;
         }
 
         int curX = 15;
         int curY = 60;
-
-        curX += renderer.renderWithOuterFill("Object", 15, 60) + 20;
 
         int[] p = new int[] {curX, curY};
         int index = 0;
@@ -77,7 +86,7 @@ public class GraphRenderer implements AnimationFrameCallback {
         renderer.startSize(theStrYea);
 
         if (index != 0)
-            p[1] += 30;
+            p[1] += 40;
         else
             sy-=40;
 
@@ -87,7 +96,7 @@ public class GraphRenderer implements AnimationFrameCallback {
         renderCur0(renderer, four, p);
 
         int[] endSize = renderer.endSize(theStrYea);
-        renderer.drawRectOutline(sx, sy, endSize[0], endSize[1] - 75, Color.WHITE);
+        renderer.drawRectOutline(sx, sy, endSize[0] + 25, endSize[1] - 5, Color.RECT_OUTLINE_COLOR);
 
         p[0] = sx;
     }
@@ -98,11 +107,20 @@ public class GraphRenderer implements AnimationFrameCallback {
             case Integer b:
                 s = b + "";
                 break;
+            case Float b:
+                s = b + "";
+                break;
+            case Double b:
+                s = b + "";
+                break;
+            case BigDecimal b:
+                s = b + "";
+                break;
             case Boolean b:
                 s = b + "";
                 break;
             case String ss:
-                s = "\"" + ss + "\"";
+                s = ss;
                 break;
             case JSONObject obj:
                 int index = 0;
@@ -112,14 +130,17 @@ public class GraphRenderer implements AnimationFrameCallback {
                 }
                 return;
             case JSONArray objs:
+                int index00 = 0;
                 for (Object obj : objs) {
                     int sx = pos[0];
                     pos[0] += 30;
-                    renderCur0(renderer, "Array", pos);
+                    renderCur0(renderer, index00, pos);
                     renderCur0(renderer, obj, pos);
                     pos[0] = sx;
-                    pos[1] += 30;
+                    pos[1] += 40;
+                    index00++;
                 }
+                if (index00 > 0) pos[1] -= 40;
                 return;
             default:
                 throw new IllegalStateException("Unexpected value: " + toR);

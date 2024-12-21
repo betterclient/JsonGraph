@@ -1,5 +1,6 @@
 package io.github.betterclient.jsongraph;
 
+import io.github.betterclient.jsongraph.renderer.GraphRenderer;
 import org.json.JSONObject;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
@@ -29,12 +30,12 @@ public class GraphGenerator {
         }
     }
 
-    private static void graph(String s) {
+    public static void graph(String s) {
         JSONObject obj;
         try {
             obj = new JSONObject(s);
         } catch (Exception e) {
-            obj = null;
+            obj = null; //invalid input
         }
 
         if (renderer != null) {

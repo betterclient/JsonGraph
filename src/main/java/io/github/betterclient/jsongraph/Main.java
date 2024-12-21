@@ -1,5 +1,7 @@
 package io.github.betterclient.jsongraph;
 
+import io.github.betterclient.jsongraph.renderer.GraphRenderer;
+import io.github.betterclient.jsongraph.util.ExampleJSONDataUtilityClassFactoryUtilThingy;
 import org.teavm.jso.dom.html.HTMLButtonElement;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
@@ -15,6 +17,8 @@ public class Main {
 
             GraphGenerator.graph(inputElement.getFiles().get(0));
         });
+
+        ExampleJSONDataUtilityClassFactoryUtilThingy.generate();
 
         GraphGenerator.renderer = new GraphRenderer(null, (HTMLCanvasElement) HTMLDocument.current().getElementById("canvas"));
         GraphGenerator.renderer.onAnimationFrame(0);

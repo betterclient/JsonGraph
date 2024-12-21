@@ -1,5 +1,6 @@
 package io.github.betterclient.jsongraph.renderer;
 
+import io.github.betterclient.jsongraph.util.Color;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasImageSource;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
@@ -40,15 +41,11 @@ public class UIRenderer {
 
     private void setColor(Color color) {
         this.context2D.setFillStyle(
-                "rgba(" +
-                        color.getRed() +
-                        ", " +
-                        color.getGreen() +
-                        ", " +
-                        color.getBlue() +
-                        ", " +
-                        (color.getAlpha() / 255f) + //Alpha is represented as a float for some f*cking reason.
-                ")"
+                color.toString()
+        );
+
+        this.context2D.setStrokeStyle(
+                color.toString()
         );
     }
 
@@ -149,7 +146,7 @@ public class UIRenderer {
         this.setColor(color);
         this.context2D.setLineWidth(4);
 
-        this.context2D.strokeRect(sx, sy, endX, endY);
+        this.context2D.strokeRect(sx, sy, endX - sx, endY - sy);
         set(endX, endY);
     }
 

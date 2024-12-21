@@ -1,4 +1,4 @@
-package io.github.betterclient.jsongraph.renderer;
+package io.github.betterclient.jsongraph.util;
 
 public class Color {
     //-------------DEFAULT COLORS-------------
@@ -7,6 +7,9 @@ public class Color {
     public static final Color BLUE = new Color(0, 0, 255);
     public static final Color WHITE = new Color(255, 255, 255);
     public static final Color BLACK = new Color(0, 0, 0);
+    public static final Color GRADIENT_0 = new Color(0xFF52D1DC);
+    public static final Color GRADIENT_1 = new Color(0xF00DB4BE); //Reference
+    public static final Color RECT_OUTLINE_COLOR = new Color(0xFFEEEEEE);
 
     //-------------COLOR IMPLEMENTATION-------------
     private final int red, green, blue, alpha;
@@ -21,6 +24,13 @@ public class Color {
         this.blue = blue;
         this.alpha = alpha;
         testColorValueRange(red, green, blue, alpha);
+    }
+
+    public Color(int color) {
+        this.alpha = (color >> 24) & 0xFF;
+        this.red = (color >> 16) & 0xFF;
+        this.green = (color >> 8) & 0xFF;
+        this.blue = color & 0xFF;
     }
 
     public int getRed() {
@@ -63,5 +73,18 @@ public class Color {
             throw new IllegalArgumentException("Color parameter outside of expected range:"
                     + badComponentString);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "rgba(" +
+                getRed() +
+                ", " +
+                getGreen() +
+                ", " +
+                getBlue() +
+                ", " +
+                (getAlpha() / 255f) + //Alpha is represented as a float for some f*cking reason.
+                ")";
     }
 }
